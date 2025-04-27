@@ -43,6 +43,7 @@ void citire_fisier(const char *file) {
 }
 
 void display_menu() {
+    clear_screen();
     printf("\033[38;2;0;102;51m=====================================\033[0m\n");
     printf("\033[38;2;0;102;51m       Meniu Administrare Sali       \033[0m\n");
     printf("\033[38;2;0;102;51m=====================================\033[0m\n");
@@ -103,13 +104,95 @@ void adaugare_sala() {
 }
 
 void stergere_sala() {
-    printf("\033[38;2;0;102;51m=============\033[0m\n");
-    printf("\033[38;2;0;102;51mStergere sala\033[0m\n");
-    printf("\033[38;2;0;102;51m=============\033[0m\n");
+    clear_screen();
+    if (nrSali == 0) {
+        printf("\033[38;2;255;165;0mNu exista sali salvate momentan. Revenire la meniul principal...\033[0m\n");
+        printf("Apasa ENTER pentru a continua...");
+        getchar(); // dacă e nevoie să cureți bufferul după un scanf anterior
+        getchar(); // așteaptă ENTER
+        return;
+    }
+    int continua = 1;
+    while (continua) {
+        printf("\033[38;2;0;102;51m=============\033[0m\n");
+        printf("\033[38;2;0;102;51mStergere sala\033[0m\n");
+        printf("\033[38;2;0;102;51m=============\033[0m\n");
+        printf("%-5s %-30s %-15s\n", "Nr.", "Nume", "Capacitate");
+        for (int i = 0; i < nrSali; i++) {
+            printf("%-5d %-30s %-15d\n", i + 1, sali[i].nume, sali[i].capacitate);
+        }
+        printf("\nIntrodu numarul salii pe care vrei sa o stergi (0 pentru anulare): ");
+        int alegere;
+        if (scanf("%d", &alegere) != 1) {
+            printf("\033[38;2;255;0;0mValoare invalida. Introdu un numar.\033[0m\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        if (alegere == 0) {
+            printf("\033[38;2;255;165;0mStergere anulata.\033[0m\n");
+            return;
+        }
+
+        if (alegere < 1 || alegere > nrSali) {
+            clear_screen();
+            printf("\033[38;2;255;0;0mNumar invalid. Incearca din nou.\033[0m\n");
+            continue;
+        }
+        alegere--;
+        printf("\033[38;2;255;0;0mSterg sala '%s'.\033[0m\n", sali[alegere].nume);
+
+        for (int i = alegere; i < nrSali - 1; i++) {
+            sali[i] = sali[i + 1];
+        }
+        nrSali--;
+        FILE *fisier = fopen("../sali.txt", "w");
+        if (fisier == NULL) {
+            printf("\033[38;2;255;0;0mEroare la deschiderea fisierului pentru rescriere.\033[0m\n");
+            return;
+        }
+
+        for (int i = 0; i < nrSali; i++) {
+            fprintf(fisier, "%s,%d,%d\n", sali[i].nume, sali[i].capacitate, sali[i].liber);
+        }
+        fclose(fisier);
+        printf("\033[38;2;0;204;102mSala a fost stearsa cu succes.\033[0m\n");
+        int raspunsValid = 0;
+        while (!raspunsValid) {
+
+            printf("\nVrei sa stergi alta sala?\n");
+            printf("1. Da\n");
+            printf("2. Nu (Revenire la meniul principal)\n");
+            printf("Introdu alegerea ta: ");
+            int alegereContinua;
+            if (scanf("%d", &alegereContinua) != 1) {
+                clear_screen();
+                printf("\033[38;2;255;0;0mValoare invalida. Introdu 1 sau 2.\033[0m\n");
+                while (getchar() != '\n');
+                continue;
+            }
+            if (alegereContinua == 1) {
+                raspunsValid = 1;
+                clear_screen();
+            } else if (alegereContinua == 2) {
+                raspunsValid = 1;
+                continua = 0;
+            } else {
+                clear_screen();
+                printf("\033[38;2;255;0;0mOptiune invalida. Introdu 1 sau 2.\033[0m\n");
+            }
+        }
+    }
 }
 
 void afis_sala_liber() {
     clear_screen();
+    if (nrSali == 0) {
+        printf("\033[38;2;255;165;0mNu exista sali salvate momentan.\033[0m\n");
+        printf("Apasa ENTER pentru a continua...");
+        getchar();
+        getchar();
+        return;
+    }
     printf("\033[38;2;0;102;51m========================\033[0m\n");
     printf("\033[38;2;0;102;51mAfisare sali disponibile\033[0m\n");
     printf("\033[38;2;0;102;51m========================\033[0m\n");
@@ -124,7 +207,14 @@ void afis_sala_liber() {
     }
 
     if (!gasit) {
-        printf("Nu exista sali disponibile!\n");
+        printf("\033[38;2;255;0;0mNu exista sali disponibile pentru rezervare momentan!\033[0m\n");
+        printf("Apasa ENTER pentru a continua...");
+        getchar();
+        getchar();
+    } else {
+        printf("\nApasa ENTER pentru a reveni la meniu...");
+        getchar();
+        getchar();
     }
 }
 
@@ -148,12 +238,14 @@ void rezervare_sala() {
 }
 
 void anulare_rezervare() {
+    clear_screen();
     printf("\033[38;2;0;102;51m=================\033[0m\n");
     printf("Anulare rezervare\n");
     printf("\033[38;2;0;102;51m=================\033[0m\n");
 }
 
 void citire_meniu() {
+    clear_screen();
     int n, k;
     do {
         display_menu();
