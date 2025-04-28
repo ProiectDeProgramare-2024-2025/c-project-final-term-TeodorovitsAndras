@@ -1,0 +1,3 @@
+C:/Facultate/CC++/c-project-final-term-TeodorovitsAndras/cmake-build-debug/CMakeFiles/c_project_final_term_TeodorovitsAndras.dir
+C:/Facultate/CC++/c-project-final-term-TeodorovitsAndras/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Facultate/CC++/c-project-final-term-TeodorovitsAndras/cmake-build-debug/CMakeFiles/rebuild_cache.dir
